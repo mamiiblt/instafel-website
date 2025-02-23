@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { AuthorComponent } from "@/components/AuthorComponent"; // Importing AuthorComponent
 import { OpenInInstafelComponent } from "@/components/OpenInInstafelComponent"; // Importing AuthorComponent
 import { useImportInInstafelModal } from "@/components/useImportInInstafelModal";
+import { saveAs } from "file-saver";
 
 export default function Backup() {
   const searchParams = useSearchParams();
@@ -25,23 +26,11 @@ export default function Backup() {
   }, [id]);
 
   const handleDownload = async (id, version) => {
-    const response = await fetch(`https://raw.githubusercontent.com/instafel/backups/refs/heads/main/${id}/backup.ibackup`);
-
-    if (!response.ok) {
-      console.error("Failed to fetch the file");
-      return;
-    }
-
-    const jsonData = await response.json();
-    const fileName = `${id}_${version}.ibackup`;
-
-    const file = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(file);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
+    const link = document.createElement("a");
+    link.href = `https://api.mamiiblt.me/ifl/dw_backup?id=${id}&version=${version}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const { ImportInInstafelModal, openModal } = useImportInInstafelModal();
